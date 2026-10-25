@@ -122,6 +122,16 @@
       "commandName": "create_dimensions",
       "description": "Create dimension annotations between elements or points in the current view",
       "assemblyPath": "RevitMCPCommandSet.dll"
+    },
+    {
+      "commandName": "get_view_templates",
+      "description": "List view templates with their main settings and how many views use each",
+      "assemblyPath": "RevitMCPCommandSet.dll"
+    },
+    {
+      "commandName": "get_view_template_settings",
+      "description": "Read a view template's settings: includes, category visibility and overrides, filters, view range",
+      "assemblyPath": "RevitMCPCommandSet.dll"
     }
   ]
 }
