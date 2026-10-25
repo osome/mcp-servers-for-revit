@@ -9,7 +9,7 @@ No Pretty Colors' internal build of [mcp-servers-for-revit](https://github.com/m
 - **Revit 2026: the add-in loads in its own context** (`ManifestSettings` in `NPC.MCP.Isolated.addin`), and the command set gets its own load context inside it, so the DLLs we ship can't clash with pyRevit or other add-ins (upstream #31, #47).
 - **`send_code_to_revit`** skips duplicate and unreadable assemblies when compiling (upstream #26, #59), and reports clearly when no model is open.
 - **NPC identity:** manifest `NPC.MCP.addin`, ClientId `CE5E1204-59A7-4022-A6B1-3475CCE74D87`, vendor `NoPrettyColors`. Buttons sit on the shared **NPC** ribbon tab, panel **MCP**.
-- **Release workflow** skips npm publishing outside the upstream repository.
+- **Revit 2026 only** for builds and releases (`.github/workflows/npc-release.yml`). Upstream's `release.yml` is skipped on forks. The 2020–2025 build configurations and code paths stay, so upstream merges stay simple.
 
 Assembly, namespace and folder names (`revit_mcp_plugin`, `RevitMCPPlugin.dll`) stay as upstream has them, to keep upstream merges simple.
 
@@ -29,6 +29,22 @@ Copy `plugin/Core/NpcRibbon.cs` into the new add-in and call `NpcRibbon.GetOrCre
 5. In Revit: NPC tab > MCP Settings, enable the commands you want, Save. Then NPC tab > MCP Service.
 
 `send_code_to_revit` runs any C# it's sent inside Revit. Leave it disabled unless the user needs it.
+
+## Releasing
+
+Tag `npc/main` and push the tag; the NPC Release workflow builds Revit 2026 and attaches two ZIPs to a GitHub release:
+
+```bash
+git tag npc-v1.1.0
+git push origin npc-v1.1.0
+```
+
+- `npc-mcp-<tag>-Revit2026.zip`: extract into `%AppData%\Autodesk\Revit\Addins\2026\`.
+- `npc-mcp-<tag>-server.zip`: extract anywhere, run `npm ci --omit=dev`, and point Claude at `node <folder>\build\index.js`.
+
+To get the ZIPs without publishing a release, run the workflow manually (Actions > NPC Release > Run workflow) and download the build artifact.
+
+This fork is public (GitHub keeps forks of public repos public), so releases on it are public too. Don't use `scripts/release.ps1`: it resets to `main` and makes upstream-style `v*` tags.
 
 ## Updating from upstream
 

@@ -11,6 +11,8 @@ permissions:
 
 jobs:
   build:
+    # Forks (such as NPC's, see npc-release.yml) don't build or publish upstream's releases.
+    if: github.repository == 'mcp-servers-for-revit/mcp-servers-for-revit'
     runs-on: windows-latest
 
     steps:

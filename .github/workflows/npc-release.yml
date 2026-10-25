@@ -1,0 +1,78 @@
+# NPC release: Revit 2026 only. Upstream's release.yml (all Revit versions, npm publish) is skipped on this fork.
+# Tag npc/main with npc-vX.Y.Z to publish a GitHub release; run it manually to get the ZIPs as a build artifact only.
+name: NPC Release
+
+on:
+  push:
+    tags:
+      - 'npc-v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Build MCP Server
+        working-directory: server
+        run: |
+          npm ci
+          npm run build
+
+      # The two projects, not the solution: the test project needs the .NET 10 SDK and a licensed Revit.
+      # The commandset's DeployCommandSet target copies its output into the plugin's AddIn layout.
+      - name: Build Revit 2026 add-in
+        run: |
+          dotnet build plugin/RevitMCPPlugin.csproj -c "Release R26"
+          dotnet build commandset/RevitMCPCommandSet.csproj -c "Release R26"
+
+      - name: Create release assets
+        shell: pwsh
+        run: |
+          $version = if ("${{ github.ref_type }}" -eq "tag") { "${{ github.ref_name }}" } else { "build-${{ github.run_number }}" }
+          $outputDir = "release-assets"
+          New-Item -ItemType Directory -Force -Path $outputDir | Out-Null
+
+          $addinDir = "plugin/bin/AddIn 2026 Release R26"
+          if (-not (Test-Path "$addinDir/NPC.MCP.addin")) { throw "Add-in output not found in $addinDir" }
+          Compress-Archive -Path "$addinDir/*" -DestinationPath "$outputDir/npc-mcp-$version-Revit2026.zip"
+
+          # Run on the user's machine with: npm ci --omit=dev, then node build/index.js
+          $serverDir = "server-package"
+          New-Item -ItemType Directory -Force -Path $serverDir | Out-Null
+          Copy-Item server/build, server/package.json, server/package-lock.json, server/README.md $serverDir -Recurse
+          Compress-Archive -Path "$serverDir/*" -DestinationPath "$outputDir/npc-mcp-$version-server.zip"
+
+          Get-ChildItem $outputDir | ForEach-Object { Write-Host "Created $($_.Name)" }
+
+      - name: Upload build artifact
+        if: github.ref_type != 'tag'
+        uses: actions/upload-artifact@v4
+        with:
+          name: npc-mcp-revit2026
+          path: release-assets/*.zip
+
+      - name: Create Release
+        if: github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release-assets/*.zip
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
