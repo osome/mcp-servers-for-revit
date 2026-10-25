@@ -132,6 +132,26 @@
       "commandName": "get_view_template_settings",
       "description": "Read a view template's settings: includes, category visibility and overrides, filters, view range",
       "assemblyPath": "RevitMCPCommandSet.dll"
+    },
+    {
+      "commandName": "create_view_template",
+      "description": "Create a view template from a view, or duplicate an existing template",
+      "assemblyPath": "RevitMCPCommandSet.dll"
+    },
+    {
+      "commandName": "set_view_template_properties",
+      "description": "Change view template properties: scale, detail level, view range, parameters, included settings",
+      "assemblyPath": "RevitMCPCommandSet.dll"
+    },
+    {
+      "commandName": "set_category_overrides",
+      "description": "Set category visibility and graphic overrides on view templates or views",
+      "assemblyPath": "RevitMCPCommandSet.dll"
+    },
+    {
+      "commandName": "assign_view_template",
+      "description": "Assign, remove, or apply once a view template on views",
+      "assemblyPath": "RevitMCPCommandSet.dll"
     }
   ]
 }
