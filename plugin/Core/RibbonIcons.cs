@@ -1,4 +1,7 @@
 using System;
+using System.Diagnostics;
+using System.IO;
+using System.Resources;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Autodesk.Revit.UI;
@@ -31,24 +34,33 @@ namespace revit_mcp_plugin.Core
         /// </summary>
         public static void Refresh()
         {
-            Color foreground = IsDarkTheme() ? DarkThemeForeground : LightThemeForeground;
-
-            if (_serviceButton != null)
+            // Icons are cosmetic: a failure here must never stop the add-in loading or a command finishing.
+            try
             {
-                bool running = SocketService.Instance.IsRunning;
-                string shape = running ? "plug-connected" : "plug-disconnected";
-                Color color = running ? Connected : foreground;
-                _serviceButton.Image = Tinted($"{shape}-16.png", color);
-                _serviceButton.LargeImage = Tinted($"{shape}-32.png", color);
-                _serviceButton.ToolTip = running
-                    ? $"The MCP service is on (127.0.0.1:{SocketService.Instance.Port}). Click to switch it off."
-                    : "The MCP service is off. Click to switch it on, so AI assistants on this computer can work with the open model.";
+                Color foreground = IsDarkTheme() ? DarkThemeForeground : LightThemeForeground;
+
+                if (_serviceButton != null)
+                {
+                    bool running = SocketService.Instance.IsRunning;
+                    _serviceButton.ToolTip = running
+                        ? $"The MCP service is on (127.0.0.1:{SocketService.Instance.Port}). Click to switch it off."
+                        : "The MCP service is off. Click to switch it on, so AI assistants on this computer can work with the open model.";
+
+                    string shape = running ? "plug-connected" : "plug-disconnected";
+                    Color color = running ? Connected : foreground;
+                    _serviceButton.Image = Tinted($"{shape}-16.png", color);
+                    _serviceButton.LargeImage = Tinted($"{shape}-32.png", color);
+                }
+
+                if (_settingsButton != null)
+                {
+                    _settingsButton.Image = Tinted("settings-16.png", foreground);
+                    _settingsButton.LargeImage = Tinted("settings-32.png", foreground);
+                }
             }
-
-            if (_settingsButton != null)
+            catch (Exception ex)
             {
-                _settingsButton.Image = Tinted("settings-16.png", foreground);
-                _settingsButton.LargeImage = Tinted("settings-32.png", foreground);
+                Trace.WriteLine($"NPC MCP: couldn't update the ribbon icons: {ex}");
             }
         }
 
@@ -62,11 +74,19 @@ namespace revit_mcp_plugin.Core
 #endif
         }
 
+        // The WPF resources compiled into this assembly (the <Resource> items in the .csproj).
+        private static readonly ResourceManager WpfResources = new ResourceManager(
+            typeof(RibbonIcons).Assembly.GetName().Name + ".g", typeof(RibbonIcons).Assembly);
+
         private static BitmapSource Tinted(string fileName, Color color)
         {
-            var source = new FormatConvertedBitmap(
-                new BitmapImage(new Uri($"/RevitMCPPlugin;component/Core/Ressources/{fileName}", UriKind.RelativeOrAbsolute)),
-                PixelFormats.Bgra32, null, 0);
+            // Read straight from the embedded resources: a relative pack URI has no base to resolve against
+            // when decoded here, and WPF then treats it as a file path.
+            Stream stream = WpfResources.GetStream("core/ressources/" + fileName.ToLowerInvariant())
+                ?? throw new FileNotFoundException($"Ribbon icon {fileName} isn't embedded in the plugin.");
+            BitmapFrame frame = BitmapDecoder.Create(stream, BitmapCreateOptions.None, BitmapCacheOption.OnLoad).Frames[0];
+
+            var source = new FormatConvertedBitmap(frame, PixelFormats.Bgra32, null, 0);
 
             int stride = source.PixelWidth * 4;
             byte[] pixels = new byte[stride * source.PixelHeight];
