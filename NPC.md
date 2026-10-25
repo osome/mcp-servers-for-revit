@@ -42,7 +42,7 @@ git push origin npc-v1.1.0
 - `npc-mcp-<tag>-Revit2026.zip`: extract into `%AppData%\Autodesk\Revit\Addins\2026\`.
 - `npc-mcp-<tag>-server.zip`: extract anywhere, run `npm ci --omit=dev`, and point Claude at `node <folder>\build\index.js`.
 
-To get the ZIPs without publishing a release, run the workflow manually (Actions > NPC Release > Run workflow) and download the build artifact.
+To get the ZIPs without publishing a release, run the workflow manually (Actions > NPC Release > Run workflow) and download the build artifact. GitHub only offers manual runs for workflows on the default branch, so this needs `npc/main` set as the fork's default branch.
 
 This fork is public (GitHub keeps forks of public repos public), so releases on it are public too. Don't use `scripts/release.ps1`: it resets to `main` and makes upstream-style `v*` tags.
 
