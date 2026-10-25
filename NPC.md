@@ -13,6 +13,27 @@ No Pretty Colors' internal build of [mcp-servers-for-revit](https://github.com/m
 
 Assembly, namespace and folder names (`revit_mcp_plugin`, `RevitMCPPlugin.dll`) stay as upstream has them, to keep upstream merges simple.
 
+## Template authoring commands
+
+NPC-only commands for building project templates (`.rte`). They live in `commandset/Commands/Views/` and `commandset/Services/Views/`, with server tools of the same name in `server/src/tools/`. They work on view templates and on ordinary views, and take element names as well as ids.
+
+| Tool | Does |
+|---|---|
+| `get_view_templates` | Lists view templates with scale, detail level, discipline, phase filter and how many views use each. |
+| `get_view_template_settings` | One template's (or view's) settings: included settings, category visibility and overrides, filters, view range. |
+| `create_view_template` | Makes a template from a view, or duplicates a template. |
+| `set_view_template_properties` | Scale, detail level, discipline, display style, phase filter, view range, other parameters, and which settings the template includes. |
+| `set_category_overrides` | Category visibility and graphic overrides (Visibility/Graphics). |
+| `assign_view_template` | Assigns, removes, or applies once a template on views. |
+| `get_view_filters` | View filters with their categories, rules and the templates that use them. |
+| `create_view_filter` | Creates or updates a rule-based filter. Numbers are in the parameter's display units. |
+| `apply_view_filters` | Adds, updates, removes or reorders filters on templates or views. |
+| `audit_views` | Views with and without a template, which are on sheets, and what each template leaves to its views. |
+| `get_object_styles` | Object styles and line styles: line weights, color, pattern, material. |
+| `set_object_styles` | Changes object styles; creates subcategories and line styles. |
+
+Overrides use one JSON shape for reading and writing (`halftone`, `transparency`, `projectionLine`, `cutLine`, `surfaceForeground`, ...), so what `get_view_template_settings` returns can be sent back to `set_category_overrides` or `apply_view_filters`. Deleting a template or filter goes through `delete_element`.
+
 ## Adding another NPC add-in to the NPC tab
 
 Copy `plugin/Core/NpcRibbon.cs` into the new add-in and call `NpcRibbon.GetOrCreatePanel(application, "<Panel>")` from `OnStartup`. Give each add-in its own ClientId and, for Revit 2026+, its own `ManifestSettings` block. Don't reference one add-in's DLL from another.
