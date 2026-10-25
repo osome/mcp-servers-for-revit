@@ -371,3 +371,11 @@ FodyWeavers.xsd
 # =============================================================================
 .claude/
 .DS_Store
+
+# =============================================================================
+# NPC: share the project's Claude Code setup (upstream ignores .claude/ above).
+# Appended rather than edited so upstream merges don't conflict.
+# =============================================================================
+!.claude/
+.claude/settings.local.json
+.claude/worktrees/
