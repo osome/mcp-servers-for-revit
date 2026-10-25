@@ -15,7 +15,7 @@ Assembly, namespace and folder names (`revit_mcp_plugin`, `RevitMCPPlugin.dll`) 
 
 ## Template authoring commands
 
-NPC-only commands for building project templates (`.rte`). They live in `commandset/Commands/Views/` and `commandset/Services/Views/`, with server tools of the same name in `server/src/tools/`. They work on view templates and on ordinary views, and take element names as well as ids.
+NPC-only commands for building project templates (`.rte`). They are their own command set, **NPCTemplateCommandSet** (`npc-template-commandset/`), listed separately in MCP Settings, with server tools of the same name in `server/src/tools/`. They work on view templates and on ordinary views, and take element names as well as ids.
 
 | Tool | Does |
 |---|---|
@@ -34,20 +34,26 @@ NPC-only commands for building project templates (`.rte`). They live in `command
 
 Overrides use one JSON shape for reading and writing (`halftone`, `transparency`, `projectionLine`, `cutLine`, `surfaceForeground`, ...), so what `get_view_template_settings` returns can be sent back to `set_category_overrides` or `apply_view_filters`. Deleting a template or filter goes through `delete_element`.
 
+## Adding an NPC command set
+
+NPC commands go in their own command set, not in upstream's `commandset/`, so upstream merges never touch them. The plugin lists every folder under `revit_mcp_plugin\Commands\` that has a `command.json`, and loads each set's DLL from its `<year>\` subfolder in its own load context.
+
+To add a set, copy `npc-template-commandset/` as a model: the `.csproj` (rename the assembly and the `Commands\<SetName>\` folder in `DeployCommandSet`), `command.json`, and the three files copied from upstream (`RevitCommandBase.cs`, `RequestGate.cs`, `ElementIdExtensions.cs`). A set can't reference another set's DLL. Command names must be unique across all sets. Then add the project to `install.ps1`, `npc-release.yml` and the build commands in CLAUDE.md.
+
 ## Adding another NPC add-in to the NPC tab
 
 Copy `plugin/Core/NpcRibbon.cs` into the new add-in and call `NpcRibbon.GetOrCreatePanel(application, "<Panel>")` from `OnStartup`. Give each add-in its own ClientId and, for Revit 2026+, its own `ManifestSettings` block. Don't reference one add-in's DLL from another.
 
 ## Install (Revit 2026)
 
-1. Build: `dotnet build mcp-servers-for-revit.sln -c "Release R26"` (or build `plugin` and `commandset` separately).
+1. Build `plugin`, `commandset` and `npc-template-commandset` with `-c "Release R26"` (the commands are in CLAUDE.md), or use the `install-revit` skill, which builds and installs.
 2. Close Revit. Remove any old `mcp-servers-for-revit.addin` or `revit-mcp.addin` from `%AppData%\Autodesk\Revit\Addins\2026\`.
 3. Copy the contents of `plugin\bin\AddIn 2026 Release R26\` into `%AppData%\Autodesk\Revit\Addins\2026\`.
 4. Build the MCP server: `cd server && npm ci && npm run build`. The npm release of `mcp-server-for-revit` (1.0.0) doesn't send the session token, so use this build:
    ```json
    { "mcpServers": { "npc-revit": { "command": "node", "args": ["C:\\DEV\\mcp-servers-for-revit\\server\\build\\index.js"] } } }
    ```
-5. In Revit: NPC tab > MCP Settings, enable the commands you want, Save. Then NPC tab > MCP Service.
+5. In Revit: NPC tab > MCP Settings, enable the commands you want in each command set, Save. Then NPC tab > MCP Service. Commands are loaded when the service starts, so after changing the selection, switch the service off and on again.
 
 `send_code_to_revit` runs any C# it's sent inside Revit. Leave it disabled unless the user needs it.
 

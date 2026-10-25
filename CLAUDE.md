@@ -37,11 +37,13 @@ Ask first before tagging a release, deleting a branch or tag, or changing reposi
 
 ## Revit
 
-- NPC uses **Revit 2026 only**. Build the two projects, not the solution: the test project needs the .NET 10 SDK and a licensed Revit.
+- NPC uses **Revit 2026 only**. Build the projects, not the solution: the test project needs the .NET 10 SDK and a licensed Revit.
   ```
   dotnet build plugin/RevitMCPPlugin.csproj -c "Release R26"
   dotnet build commandset/RevitMCPCommandSet.csproj -c "Release R26"
+  dotnet build npc-template-commandset/NPCTemplateCommandSet.csproj -c "Release R26"
   ```
+- NPC commands go in NPC command sets (`npc-*-commandset/`), not in upstream's `commandset/`. Each set is its own DLL with its own `command.json`, so upstream merges never touch NPC commands.
   The 2020–2025 configurations stay for upstream's sake; don't delete them, and keep them compiling.
 - Revit 2026 loads the add-in in its own context through `ManifestSettings` in `plugin/Manifests/NPC.MCP.Isolated.addin`. Revit 2025 and earlier reject that element, so they use `NPC.MCP.addin`. Keep the two `AddIn` blocks identical.
 - The command set loads through `CommandSetLoadContext`, never `Assembly.LoadFrom`. `LoadFrom` puts it in Revit's default context, where its `IRevitCommand` stops matching the plugin's.

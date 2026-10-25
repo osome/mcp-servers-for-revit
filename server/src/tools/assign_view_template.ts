@@ -5,7 +5,7 @@ import { runRevitCommand, viewRef, viewRefs } from "../utils/viewTools.js";
 export function registerAssignViewTemplateTool(server: McpServer) {
   server.tool(
     "assign_view_template",
-    "Assign a view template to views in Revit, remove their template, or apply a template's settings once without linking it. Views the template doesn't fit (wrong view type) are reported as skipped.",
+    "Assign a view template to views in Revit, remove their template, or apply a template's settings once without linking it. Views Revit won't take the template on are reported as skipped. Revit accepts some templates of another view type (e.g. a section template on a plan), so match view types yourself.",
     {
       views: viewRefs.describe("Views (not templates) to change: element ids or exact names"),
       template: viewRef.optional().describe("View template to assign or apply; not needed for mode remove"),
