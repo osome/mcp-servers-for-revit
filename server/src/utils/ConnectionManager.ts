@@ -46,7 +46,7 @@ export async function withRevitConnection<T>(
           cleanup();
           reject(
             new Error(
-              `Could not connect to Revit on port ${port}. Make sure Revit is open and the MCP service is switched on (Revit MCP Switch button).`
+              `Could not connect to Revit on port ${port}. Make sure Revit is open and the MCP service is switched on (NPC tab > MCP Service).`
             )
           );
         };
