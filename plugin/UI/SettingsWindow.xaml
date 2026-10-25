@@ -19,6 +19,9 @@
                 <ListBoxItem x:Name="CommandSetItem" IsSelected="True" Padding="10,8">
                     <TextBlock Text="CommandSet" FontSize="14"/>
                 </ListBoxItem>
+                <ListBoxItem x:Name="ConnectionItem" Padding="10,8">
+                    <TextBlock Text="Connection" FontSize="14"/>
+                </ListBoxItem>
                 <!-- 将来可以在此添加更多导航选项 -->
             </ListBox>
         </Border>

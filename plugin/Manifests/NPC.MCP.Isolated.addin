@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Revit 2026+. Keep the AddIn block identical to NPC.MCP.addin. -->
+<RevitAddIns>
+  <AddIn Type="Application">
+    <Name>NPC MCP</Name>
+    <Assembly>revit_mcp_plugin/RevitMCPPlugin.dll</Assembly>
+    <FullClassName>revit_mcp_plugin.Core.Application</FullClassName>
+    <ClientId>CE5E1204-59A7-4022-A6B1-3475CCE74D87</ClientId>
+    <VendorId>NoPrettyColors</VendorId>
+    <VendorDescription>No Pretty Colors, https://noprettycolors.com</VendorDescription>
+  </AddIn>
+  <!-- Load into a context of our own, not Revit's default one, so the DLLs we ship (Newtonsoft.Json,
+       Roslyn, ...) can't clash with other add-ins such as pyRevit (upstream issue #31).
+       Revit 2025 and earlier reject this element, hence the separate manifest. -->
+  <ManifestSettings>
+    <UseRevitContext>False</UseRevitContext>
+  </ManifestSettings>
+</RevitAddIns>

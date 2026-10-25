@@ -72,14 +72,13 @@
     <ItemGroup>
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
     </ItemGroup>
-    <ItemGroup>
-        <None Update="mcp-servers-for-revit.addin">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-    </ItemGroup>
+    <PropertyGroup>
+        <!-- Revit 2026 added per-add-in load contexts; older versions reject the manifest setting that asks for one. -->
+        <AddinManifestSource>Manifests\NPC.MCP.addin</AddinManifestSource>
+        <AddinManifestSource Condition="'$(RevitVersion)' &gt;= '2026'">Manifests\NPC.MCP.Isolated.addin</AddinManifestSource>
+    </PropertyGroup>
     <Target Name="CopyFiles" AfterTargets="CoreBuild">
         <ItemGroup>
-            <RootItem Include="$(ProjectDir)*.addin"/>
             <AddinItem Include="$(TargetDir)*.dll"/>
             <AddinItem Include="$(TargetDir)*.pdb"/>
         </ItemGroup>
@@ -89,7 +88,7 @@
             <AddinDir>$(RootDir)$(RootNameSpace)\</AddinDir>
         </PropertyGroup>
 
-        <Copy SourceFiles="@(RootItem)" DestinationFolder="$(RootDir)"/>
+        <Copy SourceFiles="$(ProjectDir)$(AddinManifestSource)" DestinationFiles="$(RootDir)NPC.MCP.addin"/>
         <Copy SourceFiles="@(AddinItem)" DestinationFolder="$(AddinDir)"/>
 
         <ItemGroup>

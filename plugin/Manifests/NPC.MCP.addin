@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Revit 2020-2025. Revit 2026+ uses NPC.MCP.Isolated.addin; keep the two AddIn blocks identical. -->
+<RevitAddIns>
+  <AddIn Type="Application">
+    <Name>NPC MCP</Name>
+    <Assembly>revit_mcp_plugin/RevitMCPPlugin.dll</Assembly>
+    <FullClassName>revit_mcp_plugin.Core.Application</FullClassName>
+    <ClientId>CE5E1204-59A7-4022-A6B1-3475CCE74D87</ClientId>
+    <VendorId>NoPrettyColors</VendorId>
+    <VendorDescription>No Pretty Colors, https://noprettycolors.com</VendorDescription>
+  </AddIn>
+</RevitAddIns>

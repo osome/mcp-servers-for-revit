@@ -32,6 +32,11 @@ namespace revit_mcp_plugin.UI
             {
                 ContentFrame.Navigate(commandSetPage);
             }
+            else if (NavListBox.SelectedItem == ConnectionItem)
+            {
+                // Created on demand so it shows the service's current port.
+                ContentFrame.Navigate(new ConnectionSettingsPage());
+            }
         }
     }
 }

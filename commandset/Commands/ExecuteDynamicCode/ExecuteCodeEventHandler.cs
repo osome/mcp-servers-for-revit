@@ -51,8 +51,11 @@ namespace RevitMCPCommandSet.Commands.ExecuteDynamicCode
         {
             try
             {
-                var doc = app.ActiveUIDocument.Document;
+                // Set first: the catch below reports through ResultInfo.
                 ResultInfo = new ExecutionResultInfo();
+
+                var doc = app.ActiveUIDocument?.Document
+                    ?? throw new InvalidOperationException("No model is open in Revit. Open a project, then try again.");
 
                 object result;
                 if (_transactionMode == TransactionModeNone)
@@ -128,12 +131,7 @@ namespace AIGeneratedCode
 
             var syntaxTree = CSharpSyntaxTree.ParseText(wrappedCode);
 
-            // 添加必要的程序集引用（引用所有已加载的程序集）
-            var references = AppDomain.CurrentDomain.GetAssemblies()
-                .Where(a => !a.IsDynamic && !string.IsNullOrEmpty(a.Location))
-                .Select(a => MetadataReference.CreateFromFile(a.Location))
-                .Cast<MetadataReference>()
-                .ToList();
+            var references = GetLoadedAssemblyReferences();
 
             // 编译代码
             var compilation = CSharpCompilation.Create(
@@ -164,6 +162,44 @@ namespace AIGeneratedCode
 
                 return executeMethod.Invoke(null, new object[] { doc, parameters });
             }
+        }
+
+        /// <summary>
+        /// References every assembly loaded in Revit, so snippets can use any API another add-in brought in.
+        /// Two kinds of assembly would otherwise fail the whole compilation with "Line 0" errors:
+        /// a second copy of an already-referenced name (e.g. the BIM 360 add-in's own Autodesk.Http, issue #26),
+        /// and files with no readable metadata (protected or obfuscated add-in DLLs, issue #59).
+        /// </summary>
+        private static List<MetadataReference> GetLoadedAssemblyReferences()
+        {
+            var references = new List<MetadataReference>();
+            var seenNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                if (assembly.IsDynamic || string.IsNullOrEmpty(assembly.Location))
+                    continue;
+
+                // The first copy loaded wins, matching which one the CLR actually binds to.
+                string name = assembly.GetName().Name;
+                if (name == null || seenNames.Contains(name))
+                    continue;
+
+                try
+                {
+                    // CreateFromFile reads metadata lazily, so force the read here to catch unreadable files.
+                    var metadata = AssemblyMetadata.CreateFromFile(assembly.Location);
+                    metadata.GetModules();
+                    references.Add(metadata.GetReference(filePath: assembly.Location));
+                    seenNames.Add(name);
+                }
+                catch (Exception ex) when (ex is BadImageFormatException || ex is IOException || ex is UnauthorizedAccessException)
+                {
+                    System.Diagnostics.Trace.WriteLine($"send_code_to_revit: skipped unreadable assembly {assembly.Location}: {ex.Message}");
+                }
+            }
+
+            return references;
         }
 
         /// <summary>

@@ -63,7 +63,8 @@ namespace revit_mcp_plugin.Core
 
             // 使用活动文档的上下文执行创建事件的操作
             // Perform the operation that created the event using the context of the active document.
-            _uiApp.ActiveUIDocument.Document.Application.ExecuteCommand(
+            // Not via ActiveUIDocument: that's null when no model is open.
+            _uiApp.Application.ExecuteCommand(
                 (uiApp) => {
                     externalEvent = ExternalEvent.Create(handler);
                 }

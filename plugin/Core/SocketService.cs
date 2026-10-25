@@ -87,13 +87,8 @@ namespace revit_mcp_plugin.Core
             configManager.LoadConfiguration();
             
 
-            //// 从配置中读取服务端口
-            //// Read the service port from the configuration.
-            //if (configManager.Config.Settings.Port > 0)
-            //{
-            //    _port = configManager.Config.Settings.Port;
-            //}
-            _port = 8080; // 固定端口号 - Hard-wired port number.
+            // Per-user port from the Settings window's Connection page (default 8080).
+            _port = ConnectionSettings.Load().Port;
 
             // 加载命令
             // Load command.
@@ -234,7 +229,8 @@ namespace revit_mcp_plugin.Core
 
                     foreach (string message in messages)
                     {
-                        System.Diagnostics.Trace.WriteLine($"收到消息: {message}\nReceived message: {message}");
+                        // Not the message itself: it carries the session token.
+                        System.Diagnostics.Trace.WriteLine($"Received message ({message.Length} chars)");
 
                         string response = ProcessJsonRPCRequest(message, out bool closeConnection);
 

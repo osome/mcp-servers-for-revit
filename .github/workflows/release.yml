@@ -107,6 +107,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   npm-publish:
+    # Forks (such as NPC's) must not publish over the upstream npm package.
+    if: github.repository == 'mcp-servers-for-revit/mcp-servers-for-revit'
     runs-on: ubuntu-latest
     needs: build
 
