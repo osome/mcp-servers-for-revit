@@ -1,7 +1,6 @@
 ﻿using System;
 using Autodesk.Revit.UI;
 using System.Reflection;
-using System.Windows.Media.Imaging;
 
 
 
@@ -13,19 +12,20 @@ namespace revit_mcp_plugin.Core
         {
             RibbonPanel mcpPanel = NpcRibbon.GetOrCreatePanel(application, "MCP");
 
+            // Icons and the service button's tooltip are set by RibbonIcons, which tracks the service state and theme.
             PushButtonData pushButtonData = new PushButtonData("ID_EXCMD_TOGGLE_REVIT_MCP", "MCP\r\nService",
                 Assembly.GetExecutingAssembly().Location, "revit_mcp_plugin.Core.MCPServiceConnection");
-            pushButtonData.ToolTip = "Switch the MCP service on or off. When on, AI assistants on this computer can work with the open model.";
-            pushButtonData.Image = new BitmapImage(new Uri("/RevitMCPPlugin;component/Core/Ressources/icon-16.png", UriKind.RelativeOrAbsolute));
-            pushButtonData.LargeImage = new BitmapImage(new Uri("/RevitMCPPlugin;component/Core/Ressources/icon-32.png", UriKind.RelativeOrAbsolute));
-            mcpPanel.AddItem(pushButtonData);
+            var serviceButton = (PushButton)mcpPanel.AddItem(pushButtonData);
 
             PushButtonData mcp_settings_pushButtonData = new PushButtonData("ID_EXCMD_MCP_SETTINGS", "MCP\r\nSettings",
                 Assembly.GetExecutingAssembly().Location, "revit_mcp_plugin.Core.Settings");
             mcp_settings_pushButtonData.ToolTip = "Choose which MCP commands are enabled and which port the service uses.";
-            mcp_settings_pushButtonData.Image = new BitmapImage(new Uri("/RevitMCPPlugin;component/Core/Ressources/settings-16.png", UriKind.RelativeOrAbsolute));
-            mcp_settings_pushButtonData.LargeImage = new BitmapImage(new Uri("/RevitMCPPlugin;component/Core/Ressources/settings-32.png", UriKind.RelativeOrAbsolute));
-            mcpPanel.AddItem(mcp_settings_pushButtonData);
+            var settingsButton = (PushButton)mcpPanel.AddItem(mcp_settings_pushButtonData);
+
+            RibbonIcons.Register(serviceButton, settingsButton);
+#if NET
+            application.ThemeChanged += (sender, args) => RibbonIcons.Refresh();
+#endif
 
             return Result.Succeeded;
         }

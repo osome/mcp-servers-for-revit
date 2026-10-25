@@ -70,6 +70,10 @@
         <Resource Include="Core\Ressources\settings-32.png"/>
     </ItemGroup>
     <ItemGroup>
+        <!-- Shapes only; RibbonIcons colours them for the service state and Revit theme. -->
+        <Resource Include="Core\Ressources\plug-*.png"/>
+    </ItemGroup>
+    <ItemGroup>
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
     </ItemGroup>
     <PropertyGroup>
