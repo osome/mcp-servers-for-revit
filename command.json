@@ -167,6 +167,21 @@
       "commandName": "apply_view_filters",
       "description": "Add, update, remove or reorder view filters on view templates or views",
       "assemblyPath": "RevitMCPCommandSet.dll"
+    },
+    {
+      "commandName": "audit_views",
+      "description": "Report which views use which template, which have none, and where they are on sheets",
+      "assemblyPath": "RevitMCPCommandSet.dll"
+    },
+    {
+      "commandName": "get_object_styles",
+      "description": "Read object styles and line styles: line weights, color, pattern, material",
+      "assemblyPath": "RevitMCPCommandSet.dll"
+    },
+    {
+      "commandName": "set_object_styles",
+      "description": "Change object styles, or create subcategories and line styles",
+      "assemblyPath": "RevitMCPCommandSet.dll"
     }
   ]
 }
