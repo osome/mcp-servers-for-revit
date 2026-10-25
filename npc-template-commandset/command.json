@@ -1,0 +1,72 @@
+{
+  "name": "NPCTemplateCommandSet",
+  "description": "NPC: view templates, view filters and object styles for building project templates",
+  "developer": {
+    "name": "No Pretty Colors",
+    "email": "",
+    "website": "",
+    "organization": "NoPrettyColors"
+  },
+  "commands": [
+    {
+      "commandName": "get_view_templates",
+      "description": "List view templates with their main settings and how many views use each",
+      "assemblyPath": "NPCTemplateCommandSet.dll"
+    },
+    {
+      "commandName": "get_view_template_settings",
+      "description": "Read a view template's settings: includes, category visibility and overrides, filters, view range",
+      "assemblyPath": "NPCTemplateCommandSet.dll"
+    },
+    {
+      "commandName": "create_view_template",
+      "description": "Create a view template from a view, or duplicate an existing template",
+      "assemblyPath": "NPCTemplateCommandSet.dll"
+    },
+    {
+      "commandName": "set_view_template_properties",
+      "description": "Change view template properties: scale, detail level, view range, parameters, included settings",
+      "assemblyPath": "NPCTemplateCommandSet.dll"
+    },
+    {
+      "commandName": "set_category_overrides",
+      "description": "Set category visibility and graphic overrides on view templates or views",
+      "assemblyPath": "NPCTemplateCommandSet.dll"
+    },
+    {
+      "commandName": "assign_view_template",
+      "description": "Assign, remove, or apply once a view template on views",
+      "assemblyPath": "NPCTemplateCommandSet.dll"
+    },
+    {
+      "commandName": "get_view_filters",
+      "description": "List view filters with their categories, rules and the templates that use them",
+      "assemblyPath": "NPCTemplateCommandSet.dll"
+    },
+    {
+      "commandName": "create_view_filter",
+      "description": "Create or update a rule-based view filter",
+      "assemblyPath": "NPCTemplateCommandSet.dll"
+    },
+    {
+      "commandName": "apply_view_filters",
+      "description": "Add, update, remove or reorder view filters on view templates or views",
+      "assemblyPath": "NPCTemplateCommandSet.dll"
+    },
+    {
+      "commandName": "audit_views",
+      "description": "Report which views use which template, which have none, and where they are on sheets",
+      "assemblyPath": "NPCTemplateCommandSet.dll"
+    },
+    {
+      "commandName": "get_object_styles",
+      "description": "Read object styles and line styles: line weights, color, pattern, material",
+      "assemblyPath": "NPCTemplateCommandSet.dll"
+    },
+    {
+      "commandName": "set_object_styles",
+      "description": "Change object styles, or create subcategories and line styles",
+      "assemblyPath": "NPCTemplateCommandSet.dll"
+    }
+  ]
+}

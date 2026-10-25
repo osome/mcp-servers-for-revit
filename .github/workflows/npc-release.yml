@@ -35,12 +35,13 @@ jobs:
           npm ci
           npm run build
 
-      # The two projects, not the solution: the test project needs the .NET 10 SDK and a licensed Revit.
-      # The commandset's DeployCommandSet target copies its output into the plugin's AddIn layout.
+      # The projects, not the solution: the test project needs the .NET 10 SDK and a licensed Revit.
+      # Each command set's DeployCommandSet target copies its output into the plugin's AddIn layout.
       - name: Build Revit 2026 add-in
         run: |
           dotnet build plugin/RevitMCPPlugin.csproj -c "Release R26"
           dotnet build commandset/RevitMCPCommandSet.csproj -c "Release R26"
+          dotnet build npc-template-commandset/NPCTemplateCommandSet.csproj -c "Release R26"
 
       - name: Create release assets
         shell: pwsh

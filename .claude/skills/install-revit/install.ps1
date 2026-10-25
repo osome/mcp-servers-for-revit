@@ -11,8 +11,8 @@ $src = Join-Path $repo 'plugin\bin\AddIn 2026 Release R26'
 $dst = Join-Path $env:APPDATA 'Autodesk\Revit\Addins\2026'
 
 if (-not $SkipBuild) {
-    # The two projects, not the solution: the test project needs the .NET 10 SDK.
-    foreach ($project in 'plugin\RevitMCPPlugin.csproj', 'commandset\RevitMCPCommandSet.csproj') {
+    # The projects, not the solution: the test project needs the .NET 10 SDK.
+    foreach ($project in 'plugin\RevitMCPPlugin.csproj', 'commandset\RevitMCPCommandSet.csproj', 'npc-template-commandset\NPCTemplateCommandSet.csproj') {
         dotnet build (Join-Path $repo $project) -c 'Release R26' -v q -nologo
         if ($LASTEXITCODE -ne 0) { throw "Build failed: $project" }
     }
