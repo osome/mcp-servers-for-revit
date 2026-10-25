@@ -67,7 +67,14 @@ namespace NPCTemplateCommandSet.Services
                 if (!view.IsCategoryOverridable(id))
                     return "it can't be overridden in this view";
                 OverrideGraphicSettings current = reset ? new OverrideGraphicSettings() : view.GetCategoryOverrides(id);
-                view.SetCategoryOverrides(id, ViewGraphicsUtils.ApplyOverrides(doc, current, overrides));
+                OverrideGraphicSettings wanted = ViewGraphicsUtils.ApplyOverrides(doc, current, overrides);
+                view.SetCategoryOverrides(id, wanted);
+
+                // Revit reports some subcategories as overridable but drops the change, e.g. the wall layer
+                // subcategories (Structure, Finish 1, Common Edges...), which V/G doesn't offer either.
+                JObject kept = ViewGraphicsUtils.ReadOverrides(doc, view.GetCategoryOverrides(id));
+                if (!JToken.DeepEquals(kept, ViewGraphicsUtils.ReadOverrides(doc, wanted)))
+                    return "Revit didn't keep the overrides; this category can't be overridden per view";
             }
 
             return null;

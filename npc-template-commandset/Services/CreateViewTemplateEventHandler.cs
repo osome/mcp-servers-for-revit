@@ -28,8 +28,10 @@ namespace NPCTemplateCommandSet.Services
 
             View template = InTransaction(doc, "Create view template", () =>
             {
+                // View.Duplicate refuses view templates; copying the template within the document works.
                 View created = source.IsTemplate
-                    ? (View)doc.GetElement(source.Duplicate(ViewDuplicateOption.Duplicate))
+                    ? (View)doc.GetElement(ElementTransformUtils.CopyElements(
+                        doc, new List<ElementId> { source.Id }, doc, Transform.Identity, new CopyPasteOptions()).Single())
                     : source.CreateViewTemplate();
                 created.Name = name;
                 return created;

@@ -35,7 +35,7 @@ namespace NPCTemplateCommandSet.Services
                         {
                             case "assign":
                                 if (!view.IsValidViewTemplate(template.Id))
-                                    throw new ArgumentException($"'{template.Name}' ({template.ViewType}) can't be the template of a {view.ViewType}.");
+                                    throw new ArgumentException($"'{template.Name}' ({template.ViewType}) can't be the template of this {view.ViewType}.");
                                 view.ViewTemplateId = template.Id;
                                 break;
                             case "applyonce":
