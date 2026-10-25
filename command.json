@@ -152,6 +152,21 @@
       "commandName": "assign_view_template",
       "description": "Assign, remove, or apply once a view template on views",
       "assemblyPath": "RevitMCPCommandSet.dll"
+    },
+    {
+      "commandName": "get_view_filters",
+      "description": "List view filters with their categories, rules and the templates that use them",
+      "assemblyPath": "RevitMCPCommandSet.dll"
+    },
+    {
+      "commandName": "create_view_filter",
+      "description": "Create or update a rule-based view filter",
+      "assemblyPath": "RevitMCPCommandSet.dll"
+    },
+    {
+      "commandName": "apply_view_filters",
+      "description": "Add, update, remove or reorder view filters on view templates or views",
+      "assemblyPath": "RevitMCPCommandSet.dll"
     }
   ]
 }
